@@ -1550,7 +1550,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span><span class='va'>data_wo_NA</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>data_wo_NA</span>, <span class='va'>PPMSACAT</span> <span class='op'>!=</span> <span class='fl'>99</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-The boxplot below shows the respondents that live in metro area versus non metro area, plotted against the number of children they have on average.
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'>#parent_numkids &lt;- data1["S2"]</span></span>
@@ -1567,8 +1566,6 @@ The boxplot below shows the respondents that live in metro area versus non metro
 </div>
 <p><img src="index_files/figure-html5/unnamed-chunk-3-1.png" width="624" /></p>
 </div>
-<p>There is no strong correlation between living in a metropolitan area and having children based on the boxplot. However, the outliers in high numbers of children are in the metro area.</p>
-The boxplot below shows the belief in god and the number of children.
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>turnout_box</span> <span class='op'>&lt;-</span> <span class='va'>data_wo_NA</span> <span class='op'>|&gt;</span></span>
@@ -1582,8 +1579,6 @@ The boxplot below shows the belief in god and the number of children.
 </div>
 <p><img src="index_files/figure-html5/unnamed-chunk-4-1.png" width="624" /></p>
 </div>
-<p>Respondents who believe in god have a higher number of children, or are more likely to have children, than respondents that do not believe in God.</p>
-Regression: Belief in God in Metro vs. Non-Metro Areas
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://broom.tidymodels.org/'>broom</a></span><span class='op'>)</span></span>
@@ -1616,6 +1611,9 @@ Regression: Belief in God in Metro vs. Non-Metro Areas
 </tbody>
 </table>
 </div>
+<h2 id="interpretation-of-results">Interpretation of results</h2>
+<p>There is no strong correlation between living in a metropolitan area and having children based on the boxplot. However, the outliers in high numbers of children are in the metro area.</p>
+<p>Respondents who believe in god have a higher number of children, or are more likely to have children, than respondents that do not believe in God.</p>
 <p>The above regression shows that when people believe in god, they have .09 more children on average than those who do not believe in god. The intercept of 1.45 means that if PGOD were equal to zero, what would the number of children be. However, this does not make sense given that the intercept is 1.45.</p>
 <p>The coefficient for PPMSACAT means that respondents in metro areas have slightly more children, on average .03 more children, than those who do not live in metro areas. The intercept is the number of children that people have in non-metropolitan areas, which is 1.33 chlidren. Those living in metro areas therefore have 1.36 children on average.</p>
 <p>This means that respondents in metro areas have slightly more children, on average .03 more children, than those who do not live in metro areas. The intercept is the number of children that people have in non-metropolitan areas, which is 1.33 children. Those living in metro areas therefore have 1.36 children on average.</p>
