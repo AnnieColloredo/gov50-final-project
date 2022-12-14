@@ -1,14 +1,102 @@
 ---
 title: Gov 50 Final Project
 author: Annie Colloredo
-description: My final project - Religious Habits of US Teens and Parents, 2019
+description: My final project - Religious Habits of US Parents, 2019
 output:
   distill::distill_article:
     self_contained: false
 ---
+```{r}
+library(tidyverse)
+library(haven)
+library(ggplot2)
+```
+
+## Introduction 
+For my final project, I wanted to explore variation in habits across religious groups. After spending lots of time investigating how race shapes political and social divisions throughout our psets in Gov 50, I was curious how religion would divide Americans as well. Do different religious groups have different voting preferences? Do people who believe in god make different major life decisions than those who do not? Does living in a rural or urban area affect one's religion or major life decisions? 
+
+To pursue these questions, I found a data set from Pew Research Center that contains responses of teens and their parents to survey questions about religion and daily life, collected in 2019: https://www.pewresearch.org/religion/dataset/2019-survey-of-religion-among-u-s-teens-and-their-parents/ 
+
+Pew Research Center is a think tank based in Washington, DC that provides  data about religion, politics, and social issues. The data I use was collected via a self- administered web survey, from 1,811 pairs of parents and teens, between March and April of 2019. The survey asks questions about religion, identity, and politics. I wanted to determine whether one's religion shapes major life choices, and whether urban or rural residents where more likely to have more or less children. Given that perhaps the most major life choice one can make is whether to have children, I decided to plot the respondents' number of children versus whether they believe in god, as well as whether they live in an urban or rural area. I believe that understanding how religion can shape such a major life choice such as number of children can provide useful insights to political scientists. 
+
+## Description of Data
+The type of research design is a survey, containing largely qualitative responses. Given that this survey is at a certain point of time, and surveys respondents on a wide variety of issues, I would not say it is experimetnal, cross sectional nor longitudinal. The qualitative nature of the data  posed a bit of a challenge, as I had to figure out how to quantify qualitative data. Ultimately, I decided to use to plot whether respondents believed in god (1) or not (0) against the number of kids they had, which ranged from 1-12.I did the same for whether respondents lived in a metro area (1) or not (0). These were survey questions "PGOD1", which asks all adult respondents "Do you believe in God or a universal spirit?", and "S2" which asks all respondents "How many children ages 13-17 are in your household for which you are the parent, step-parent or foster parent?". Secondly, in order to determine whether urban or rural respondents had more children, I plotted the question "Do you live in a metro area?" or PPMSACAT, against the number of children. My independent variables are belief in god and metro versus nonmetro residents, and my dependent variable is number of children. 
+
+# Results 
+```{r}
+library(haven)
+library(tidyverse)
+library(ggplot2)
+data1 <- read_sav("Fin_project_data.sav")
+parent_numkids <- data1["S2"]
+parent_god <- data1["PGOD1"]
+metro <- data1["PPMSACAT"]
 
 
+data_columns <- bind_cols(parent_god, parent_numkids, metro)
+data_wo_NA <- na.omit(data_columns)
 
-## Project thoughts
+data_wo_NA <- filter(data_wo_NA, PGOD1 != 99, na.rm = TRUE)
+data_wo_NA <- filter(data_wo_NA, S2 != 99, na.rm = TRUE)
+data_wo_NA <- filter(data_wo_NA, PPMSACAT != 99, na.rm = TRUE)
+```
 
-I am interested in exploring data about the religious habits of Americans. I found a data set that contains responses of teens and their parents to survey questions, collected in 2019. 
+# Boxplot: Metro Area Residents and Children
+The boxplot below shows the respondents that live in metro area versus non metro area, plotted against the number of children they have on average.
+```{r}
+#parent_numkids <- data1["S2"]
+#PPMSACAT <- data1["PPMSACAT"]
+
+metro_box <- data_wo_NA |>
+  mutate(PPMSACAT_yes = if_else(PPMSACAT == 0, "Non Metro Area", "Metro Area")) |>
+  ggplot(mapping = aes(x = PPMSACAT_yes,
+                      y = S2)) + 
+  geom_boxplot() +
+  labs(x = "Metro Area?", 
+       y = "Number of Children") 
+metro_box
+```
+There is no strong correlation between living in a metropolitan area and having children based on the boxplot. However, the outliers in high numbers of children are in the metro area. 
+
+
+#Boxplot: Belief in God and Number of Children
+```{r}
+turnout_box <- data_wo_NA |>
+  mutate(PGOD1_yes = if_else(PGOD1 == 1, "Yes", "No")) |>
+  ggplot(mapping = aes(x = PGOD1_yes,
+                      y = S2)) + 
+  geom_boxplot() +
+  labs(x = "Believe in God", 
+       y = "Number of Children") 
+turnout_box
+```
+Respondents who believe in god have a higher number of children, or are more likely to have children, than respondents that do not believe in God. 
+
+# Multiple Regression: Belief in God and Metro vs. Non-Metro Areas
+```{r}
+library(broom)
+fit_1 <- lm(S2 ~ PGOD1 + PPMSACAT, data = data_wo_NA)
+fit_1 |>
+  broom::tidy() |>
+  select(term, estimate) |>  
+  knitr::kable(digits = 2)
+```
+The above regression shows that when people believe in god, they have .09 more children on average than those who do not believe in god. The intercept of 1.45 means that if PGOD were equal to zero, what would the number of children be.However, this does not make sense given that the intercept is 1.45.  
+
+The coefficient for PPMSACAT means that respondents in metro areas have slightly more children, on average .03 more children, than those who do not live in metro areas. The intercept is the number of children that people have in non-metropolitan areas, which is 1.33 chlidren. Those living in metro areas therefore have 1.36 children on average. 
+
+This means that respondents in metro areas have slightly more children, on average .03 more children, than those who do not live in metro areas. The intercept is the number of children that people have in non-metropolitan areas, which is 1.33 chlidren. Those living in metro areas therefore have 1.36 children on average. 
+
+#Statistical Significance and Causality
+It could  be interesting to do confidence intervals on the coefficients to determine whether they are statistically significant. As for the causality of number of children versus belief in god and metropolitan areas, it is difficult to say whether these are causual relationships. Some confounders could be that this is not a representative sample of rural residents, for example, there could have been more metropolitan respondents than rural respondents in the survey, or vice versa, and therefore one popoulation is better represented than the other. Laslty, as in all studies, there simply could be the element of a random sample that is confounding the data. 
+
+#Conclusion 
+In conclusion, there does seem to be a positive correlation between respondents' belief in God and the number of children. Those who believe in god had a higher number of children in cmoparison to those who did not, and also had outliers of up to 11 children whereas those who do not believe in god had outliers up to 3. There does not, however, seem to be a correlation between respondents living in metro versus non metro areas and the number of offpsring. I found this rather surprising, as my hypothesis was that rural respondents would have more children than urban respondents. 
+** talk about regression results
+** talk about standard deviation
+
+# Limitations
+Some limitations of this study is that it only sample size of 1,811 parents. It would be interesting to conduct this study with a larger sample of respondents. Furthermore, this study seems to skew towards religious respondents, and it would be interesting to gather more data from nonreligious people. Aside from the sample size, this study is slightly limited by the fact that it was conducted in 2019, and only qualifies parents who have teenagers. To get a more accurate representation of current birth habits and get a better cultural-demographic snapshot, one would need data from expecting parents, or parents who had children within the past year or two. 
+
+#Next steps
+Some next steps would be to release another survey on respondents, focusing instead on parents in general, rahter than parents of teens, in order to get a more up to date idea of religion's shaping demographic choices. This data is more revealing of American society ten to twenty years ago, given the respondents are the parents of teenagers, rather than society today. Working with Pew Research Center to develop a survey and perhaps update its methods would be the next steps in assessing the socio-religious habits of Americans. 
