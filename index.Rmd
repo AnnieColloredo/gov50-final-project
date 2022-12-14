@@ -41,7 +41,7 @@ data_wo_NA <- filter(data_wo_NA, S2 != 99, na.rm = TRUE)
 data_wo_NA <- filter(data_wo_NA, PPMSACAT != 99, na.rm = TRUE)
 ```
 
-The boxplot below shows the respondents that live in metro area versus non metro area, plotted against the number of children they have on average.
+
 ```{r}
 #parent_numkids <- data1["S2"]
 #PPMSACAT <- data1["PPMSACAT"]
@@ -55,10 +55,7 @@ metro_box <- data_wo_NA |>
        y = "Number of Children") 
 metro_box
 ```
-There is no strong correlation between living in a metropolitan area and having children based on the boxplot. However, the outliers in high numbers of children are in the metro area. 
 
-
-The boxplot below shows the belief in god and the number of children. 
 ```{r}
 turnout_box <- data_wo_NA |>
   mutate(PGOD1_yes = if_else(PGOD1 == 1, "Yes", "No")) |>
@@ -69,9 +66,7 @@ turnout_box <- data_wo_NA |>
        y = "Number of Children") 
 turnout_box
 ```
-Respondents who believe in god have a higher number of children, or are more likely to have children, than respondents that do not believe in God. 
 
-Regression: Belief in God in Metro vs. Non-Metro Areas
 ```{r}
 library(broom)
 fit_1 <- lm(S2 ~ PGOD1 + PPMSACAT, data = data_wo_NA)
@@ -80,6 +75,13 @@ fit_1 |>
   select(term, estimate) |>  
   knitr::kable(digits = 2)
 ```
+
+## Interpretation of results
+
+There is no strong correlation between living in a metropolitan area and having children based on the boxplot. However, the outliers in high numbers of children are in the metro area. 
+
+Respondents who believe in god have a higher number of children, or are more likely to have children, than respondents that do not believe in God. 
+
 The above regression shows that when people believe in god, they have .09 more children on average than those who do not believe in god. The intercept of 1.45 means that if PGOD were equal to zero, what would the number of children be. However, this does not make sense given that the intercept is 1.45.  
 
 The coefficient for PPMSACAT means that respondents in metro areas have slightly more children, on average .03 more children, than those who do not live in metro areas. The intercept is the number of children that people have in non-metropolitan areas, which is 1.33 chlidren. Those living in metro areas therefore have 1.36 children on average. 
